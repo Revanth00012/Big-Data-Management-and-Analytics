@@ -1,0 +1,49 @@
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+def autolabel(rects):
+    for rect in rects:
+        height = rect.get_height()
+        ax.text(rect.get_x() + rect.get_width()/2., 1.02*height,
+                '%d' % int(height),
+                ha='center', va='bottom')
+match_df = pd.read_csv("/dbfs/FileStore/tables/ym80m4vb1493066958597/matches.csv")
+
+score_df = pd.read_csv("/dbfs/FileStore/tables/kn6pqfdq1491792324708/deliveries.csv")
+match_df.head()
+
+print("Number of matches played so far : ", match_df.shape[0])
+print("Number of seasons : ", len(match_df.season.unique()))
+
+#count of the matches played by year#
+sns.countplot(x='season', data=match_df)
+display(plt.show())
+
+#matches played at a venue#
+plt.figure(figsize=(12,6))
+sns.countplot(x='venue', data=match_df)
+plt.xticks(rotation='vertical')
+display(plt.show())
+
+#top player match awardees#
+temp_series = match_df.player_of_match.value_counts()[:10]
+labels = np.array(temp_series.index)
+ind = np.arange(len(labels))
+width = 0.9
+fig, ax = plt.subplots()
+rects = ax.bar(ind, np.array(temp_series), width=width, color='y')
+ax.set_xticks(ind+((width)/2.))
+ax.set_xticklabels(labels, rotation='vertical')
+ax.set_ylabel("Count")
+ax.set_title("Top player of the match awardees")
+autolabel(rects)
+display(plt.show())
+
+#count of the type of dismissal#
+plt.figure(figsize=(12,6))
+sns.countplot(x='dismissal_kind', data=score_df)
+plt.xticks(rotation='vertical')
+plt.show()
